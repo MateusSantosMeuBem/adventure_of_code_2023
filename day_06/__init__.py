@@ -1,7 +1,10 @@
 def parse_data(lines: list[str], join_line_values=False) -> int:
     times = map(int, lines[0].split(':')[-1].split())
     distances = map(int, lines[1].split(':')[-1].split())
-    return zip(times, distances)
+    if join_line_values:
+        times = int(''.join(map(str, times)))
+        distances = int(''.join(map(str, distances)))
+    return [(times, distances)] if join_line_values else zip(times, distances)
 
 
 def get_ways_to_win(time: int, distance_record: int) -> int:
@@ -15,7 +18,9 @@ def get_ways_to_win(time: int, distance_record: int) -> int:
 
 def get_product_of_winning_ways(lines: list[str]):
     margin = 1
-    for time, distance in parse_data(lines):
+    parsed_data = parse_data(lines, True)
+    print(parsed_data)
+    for time, distance in parsed_data:
         margin *= get_ways_to_win(time, distance)
     return margin
 
