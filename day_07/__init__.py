@@ -2,8 +2,8 @@ from collections import defaultdict
 import bisect
 
 # weakest -> strongest
-strengths = ['A', 'K', 'Q', 'J', 'T', '9',
-             '8', '7', '6', '5', '4', '3', '2'][::-1]
+strengths = ['A', 'K', 'Q', 'T', '9',
+             '8', '7', '6', '5', '4', '3', '2', 'J'][::-1]
 
 
 def convert_card_to_number(cards: str, prefix: str):
@@ -17,17 +17,31 @@ def parse_line(line: str):
     return line.split()
 
 
-def get_number_of_shows(cards: str):
+def get_labels(cards: str):
     labels = defaultdict(int)
     for card in cards:
         labels[card] += 1
-    return set(labels.values())
+    return labels
+
+
+def get_number_of_shows(cards: str):
+    return set(get_labels(cards).values())
 
 
 def classify_hand(cards: str):
     unique_cards = set(cards)
     number_of_unique_cards = len(unique_cards)
+    num_jotas = cards.count('J')
+    # print(cards)
+    cards = cards.replace('J', '')
+    labels = get_labels(cards)
+    card_that_appears_more = max(labels, key=lambda k: labels[k])
+    cards += card_that_appears_more * num_jotas
+    # print(cards)
+
     shows = get_number_of_shows(cards)
+    # print(shows)
+    # print('\n\n')
     # Five of a kind
     if number_of_unique_cards == 1:
         return 7
@@ -55,6 +69,7 @@ def get_winnings(lines: list[str]):
     for line in lines:
         hand = parse_line(line)
         classification = classify_hand(hand[0])
+        print(hand[0])
         converted_hand = convert_card_to_number(
             hand[0], prefix=str(classification)), int(hand[1])
         bisect.insort(types, converted_hand)
@@ -64,7 +79,7 @@ def get_winnings(lines: list[str]):
     return winnings
 
 
-with open('./input.txt', 'r', encoding='utf-8') as file:
+with open('./input_test.txt', 'r', encoding='utf-8') as file:
     lines = file.readlines()
 
 
