@@ -13,22 +13,30 @@ def parse_line(line: str) -> tuple[str, list[str, str]]:
 def get_steps_number(lines: list[str]) -> int:
     directions = lines[0].replace('\n', '')
     coordinates = {}
+    ends_with_A = set()
     for line in lines[2:]:
         key, coordinate = parse_line(line)
         coordinates[key] = coordinate
+        if key.endswith('A'):
+            ends_with_A.add(key)
 
     steps = 0
-    foot = 'AAA'
     last_point = 'ZZZ'
-    while foot != last_point:
-        for direction in directions:
-            steps += 1
-            index = DIRECTIONS_INDEX[direction]
-            foot = coordinates[foot][index]
-    return steps
+    short_path = len(coordinates) * 2
+    longest_path = 0
+    for ends in ends_with_A:
+        foot = ends
+        while not foot.endswith('Z'):
+            for direction in directions:
+                steps += 1
+                index = DIRECTIONS_INDEX[direction]
+                foot = coordinates[foot][index]
+        short_path = steps if steps <= short_path else 0
+        longest_path = steps if steps >= longest_path else 0
+    return (short_path, longest_path)
 
 
-with open(r'./input.txt', 'r', encoding='utf-8') as file:
+with open(r'.\input.txt', 'r', encoding='utf-8') as file:
     lines = file.readlines()
 
 print(get_steps_number(lines))
