@@ -25,7 +25,7 @@ def get_predicted_numbers_sum(lines: list[str]):
     parsed_lines = parse_lines(lines)
     prediction_sum = 0
     for line in parsed_lines:
-        predicted = predict_next_number(line)
+        predicted = predict_next_number(line[::-1])
         prediction_sum += predicted
     return prediction_sum
 
