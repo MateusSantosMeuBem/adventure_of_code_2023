@@ -1,5 +1,5 @@
 from os.path import dirname, join
-from pprint import pprint
+EXPANSION_RATE = 1000000
 
 
 def is_empty_space(space: str):
@@ -58,27 +58,36 @@ def get_pair_galaxies(galaxies: set[tuple[int]]):
     return pairs
 
 
-def calculate_distance(x1, y1, x2, y2):
-    return abs(y1 - y2) + abs(x1 - x2)
+def calculate_distance(x1, y1, x2, y2, empty_lines, empty_columns):
+    height = abs(x1 - x2)
+    for empty_line in empty_lines:
+        if max(x1, x2) > empty_line and min(x1, x2) < empty_line:
+            height += EXPANSION_RATE - 1
+
+    width = abs(y1 - y2)
+    for empty_column in empty_columns:
+        if max(y1, y2) > empty_column and min(y1, y2) < empty_column:
+            width += EXPANSION_RATE - 1
+    return height + width
 
 
-def calculate_pair_distances(pairs: set[tuple[int]]):
+def calculate_pair_distances(pairs: set[tuple[int]], empty_lines, empty_columns):
     my_sum = 0
     for pair in pairs:
         galaxy_a, galaxy_b = pair
-        my_sum += calculate_distance(*galaxy_a, *galaxy_b)
+        my_sum += calculate_distance(*galaxy_a,
+                                     *galaxy_b, empty_lines, empty_columns)
     return my_sum
 
 
 def expand_universe(lines: list[str]):
     empty_lines = get_empty_lines(lines)
     empty_columns = get_empty_columns(lines)
-    expand_lines(lines, empty_lines)
-    expand_columns(lines, empty_columns)
     galaxies = get_galaxies(lines)
     pairs = get_pair_galaxies(galaxies)
-    pair_distances = calculate_pair_distances(pairs)
-    print(pair_distances)
+    pair_distances = calculate_pair_distances(
+        pairs, empty_lines, empty_columns)
+    return pair_distances
 
 
 FILENAME = 'input.txt'
